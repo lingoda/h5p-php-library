@@ -111,6 +111,15 @@ H5P.EventDispatcher.prototype.setActivityStarted = function() {
  */
 H5P.xAPICompletedListener = function (event) {
   if ((event.getVerb() === 'completed' || event.getVerb() === 'answered') && !event.getVerifiedStatementValue(['context', 'contextActivities', 'parent'])) {
+    // Throttle quickly firing, identical events
+    if (H5P.xAPICompletedListenerThrottle) {
+      return;
+    }
+
+    H5P.xAPICompletedListenerThrottle = setTimeout(function () {
+      H5P.xAPICompletedListenerThrottle = null;
+    }, 1000);
+
     var score = event.getScore();
     var maxScore = event.getMaxScore();
     var contentId = event.getVerifiedStatementValue(['object', 'definition', 'extensions', 'http://h5p.org/x-api/h5p-local-content-id']);
