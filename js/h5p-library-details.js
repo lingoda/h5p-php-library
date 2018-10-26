@@ -1,4 +1,4 @@
-var H5PLibraryDetails= H5PLibraryDetails || {};
+var H5PLibraryDetails = window.H5PLibraryDetails = window.H5PLibraryDetails || {};
 
 (function ($) {
 
