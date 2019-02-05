@@ -537,9 +537,10 @@ interface H5PFrameworkInterface {
    * Get number of contents using library as main library.
    *
    * @param int $libraryId
+   * @param array $skip
    * @return int
    */
-  public function getNumContent($libraryId);
+  public function getNumContent($libraryId, $skip = NULL);
 
   /**
    * Determines if content slug is used.
@@ -624,6 +625,14 @@ interface H5PFrameworkInterface {
    * and an optional 'message' and 'code' property to be displayed if validation fails.
    */
   public function validateLibrary($mainH5pData);
+
+  /*
+   * Checks if the given library has a higher version.
+   *
+   * @param array $library
+   * @return boolean
+   */
+  public function libraryHasUpgrade($library);
 }
 
 /**
@@ -948,11 +957,27 @@ class H5PValidator {
       }
 
       if (!empty($missingLibraries)) {
-        foreach ($missingLibraries as $libString => $library) {
-          $this->h5pF->setErrorMessage($this->h5pF->t('Missing required library @library', array('@library' => $libString)), 'missing-required-library');
+        // We still have missing libraries, check if our main library has an upgrade (BUT only if we has content)
+        $mainDependency = NULL;
+        if (!$skipContent) {
+          foreach ($mainH5PData['preloadedDependencies'] as $dep) {
+            if ($dep['machineName'] === $mainH5PData['mainLibrary']) {
+              $mainDependency = $dep;
+            }
+          }
         }
-        if (!$this->h5pC->mayUpdateLibraries()) {
-          $this->h5pF->setInfoMessage($this->h5pF->t("Note that the libraries may exist in the file you uploaded, but you're not allowed to upload new libraries. Contact the site administrator about this."));
+
+        if ($skipContent || !$mainDependency || !$this->h5pF->libraryHasUpgrade(array(
+              'machineName' => $mainDependency['mainLibrary'],
+              'majorVersion' => $mainDependency['majorVersion'],
+              'minorVersion' => $mainDependency['minorVersion']
+            ))) {
+          foreach ($missingLibraries as $libString => $library) {
+            $this->h5pF->setErrorMessage($this->h5pF->t('Missing required library @library', array('@library' => $libString)), 'missing-required-library');
+          }
+          if (!$this->h5pC->mayUpdateLibraries()) {
+            $this->h5pF->setInfoMessage($this->h5pF->t("Note that the libraries may exist in the file you uploaded, but you're not allowed to upload new libraries. Contact the site administrator about this."));
+          }
         }
       }
       $valid = empty($missingLibraries) && $valid;
@@ -1872,7 +1897,7 @@ class H5PCore {
 
   public static $coreApi = array(
     'majorVersion' => 1,
-    'minorVersion' => 19
+    'minorVersion' => 20
   );
   public static $styles = array(
     'styles/h5p.css',
@@ -1951,8 +1976,6 @@ class H5PCore {
     // Standard regex for converting copied files paths
     $this->relativePathRegExp = '/^((\.\.\/){1,2})(.*content\/)?(\d+|editor)\/(.+)$/';
   }
-
-
 
   /**
    * Save content and clear cache.
