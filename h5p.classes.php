@@ -975,7 +975,7 @@ class H5PValidator {
       }
     }
 
-    if ($mainH5pData) {
+    if ($skipContent === FALSE) {
       $frameworkValidation = $this->h5pF->validateLibrary($mainH5pData);
       if (!$frameworkValidation->valid) {
         $message = $this->h5pF->t('Validation of the main library failed.');
