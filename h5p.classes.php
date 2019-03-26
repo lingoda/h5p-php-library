@@ -1812,7 +1812,7 @@ Class H5PExport {
     }
 
     // Update content.json with content from database
-    file_put_contents("{$tmpPath}/content/content.json", $content['params']);
+    file_put_contents("{$tmpPath}/content/content.json", $content['filtered']);
 
     // Make embedType into an array
     $embedTypes = explode(', ', $content['embedType']);
@@ -2038,7 +2038,8 @@ class H5PCore {
     'js/h5p-x-api.js',
     'js/h5p-content-type.js',
     'js/h5p-confirmation-dialog.js',
-    'js/h5p-action-bar.js'
+    'js/h5p-action-bar.js',
+    'js/request-queue.js',
   );
   public static $adminScripts = array(
     'js/jquery.js',
@@ -3510,6 +3511,9 @@ class H5PCore {
       'licenseExtras' => $this->h5pF->t('License Extras'),
       'changes' => $this->h5pF->t('Changelog'),
       'contentCopied' => $this->h5pF->t('Content is copied to the clipboard'),
+      'connectionLost' => $this->h5pF->t('Connection lost. Results will be stored and sent when you regain connection.'),
+      'connectionReestablished' => $this->h5pF->t('Connection reestablished.'),
+      'resubmitScores' => $this->h5pF->t('Attempting to submit stored results.'),
     );
   }
 }
