@@ -104,6 +104,8 @@ H5P.init = function (target) {
       metadata: contentData.metadata
     };
 
+    H5P.offlineRequestQueue = new H5P.OfflineRequestQueue();
+
     H5P.getUserData(contentId, 'state', function (err, previousState) {
       if (previousState) {
         library.userDatas = {
@@ -2065,14 +2067,20 @@ H5P.setFinished = function (contentId, score, maxScore, time) {
     };
 
     // Post the results
-    H5P.jQuery.post(H5PIntegration.ajax.setFinished, {
+    const data = {
       contentId: contentId,
       score: score,
       maxScore: maxScore,
       opened: toUnix(H5P.opened[contentId]),
       finished: toUnix(new Date()),
       time: time
-    });
+    };
+    H5P.jQuery.post(H5PIntegration.ajax.setFinished, data)
+      .fail(function () {
+        if (H5P.offlineRequestQueue) {
+          H5P.offlineRequestQueue.add(H5PIntegration.ajax.setFinished, data);
+        }
+      });
   }
 };
 
