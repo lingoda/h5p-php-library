@@ -633,6 +633,15 @@ interface H5PFrameworkInterface {
    * @return boolean
    */
   public function libraryHasUpgrade($library);
+
+  /*
+   * Provide the system with a chance to check/validate the file content
+   *
+   * @param array $fileName
+   * @param array $fileContent
+   * @return boolean
+   */
+  public function checkFile($fileName, $fileContent);
 }
 
 /**
@@ -831,16 +840,26 @@ class H5PValidator {
       }
       elseif (substr($fileName, 0, 8) === 'content/') {
         // This is a content file, check that the file type is allowed
-        if ($skipContent === FALSE && $this->h5pC->disableFileCheck !== TRUE && !preg_match($contentRegExp, $fileName)) {
-          $this->h5pF->setErrorMessage($this->h5pF->t('File "%filename" not allowed. Only files with the following extensions are allowed: %files-allowed.', array('%filename' => $fileStat['name'], '%files-allowed' => $contentWhitelist)), 'not-in-whitelist');
-          $valid = FALSE;
+        if ($skipContent === FALSE && $this->h5pC->disableFileCheck !== TRUE) {
+          if (!preg_match($contentRegExp, $fileName)) {
+            $this->h5pF->setErrorMessage($this->h5pF->t('File "%filename" not allowed. Only files with the following extensions are allowed: %files-allowed.', array('%filename' => $fileStat['name'], '%files-allowed' => $contentWhitelist)), 'not-in-whitelist');
+            $valid = FALSE;
+          }
+          elseif (!$this->h5pF->checkFile($fileName, $zip->getFromIndex($i))) {
+            return false;
+          }
         }
       }
       elseif ($canInstall && strpos($fileName, '/') !== FALSE) {
         // This is a library file, check that the file type is allowed
-        if ($this->h5pC->disableFileCheck !== TRUE && !preg_match($libraryRegExp, $fileName)) {
-          $this->h5pF->setErrorMessage($this->h5pF->t('File "%filename" not allowed. Only files with the following extensions are allowed: %files-allowed.', array('%filename' => $fileStat['name'], '%files-allowed' => $libraryWhitelist)), 'not-in-whitelist');
-          $valid = FALSE;
+        if ($this->h5pC->disableFileCheck !== TRUE) {
+          if (!preg_match($libraryRegExp, $fileName)) {
+            $this->h5pF->setErrorMessage($this->h5pF->t('File "%filename" not allowed. Only files with the following extensions are allowed: %files-allowed.', array('%filename' => $fileStat['name'], '%files-allowed' => $libraryWhitelist)), 'not-in-whitelist');
+            $valid = FALSE;
+          }
+          elseif (!$this->h5pF->checkFile($fileName, $zip->getFromIndex($i))) {
+            return false;
+          }
         }
 
         // Further library validation happens after the files are extracted
