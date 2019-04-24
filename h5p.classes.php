@@ -845,7 +845,7 @@ class H5PValidator {
             $this->h5pF->setErrorMessage($this->h5pF->t('File "%filename" not allowed. Only files with the following extensions are allowed: %files-allowed.', array('%filename' => $fileStat['name'], '%files-allowed' => $contentWhitelist)), 'not-in-whitelist');
             $valid = FALSE;
           }
-          elseif (!$this->h5pF->checkFile($fileName, $zip->getFromIndex($i))) {
+          elseif (!$this->h5pF->checkFile($fileName, $zip->getFromIndex($i, 1024))) {
             return false;
           }
         }
