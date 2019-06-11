@@ -1560,16 +1560,13 @@ class H5PStorage {
    * TRUE if one or more libraries were updated
    * FALSE otherwise
    */
-  public function savePackage($content = NULL, $contentMainId = NULL, $skipContent = FALSE, $options = array()) {
+  public function savePackage(&$content = NULL, $contentMainId = NULL, $skipContent = FALSE, $options = array()) {
     if ($this->h5pC->mayUpdateLibraries()) {
       // Save the libraries we processed during validation
       $this->saveLibraries();
     }
 
     if (!$skipContent) {
-      $basePath = $this->h5pF->getUploadedH5pFolderPath();
-      $current_path = $basePath . DIRECTORY_SEPARATOR . 'content';
-
       // Save content
       if ($content === NULL) {
         $content = array();
@@ -1587,24 +1584,13 @@ class H5PStorage {
         }
       }
 
-      $content['params'] = file_get_contents($current_path . DIRECTORY_SEPARATOR . 'content.json');
+      $content['params'] = json_encode($this->h5pC->contentJsonData);
 
       if (isset($options['disable'])) {
         $content['disable'] = $options['disable'];
       }
       $content['id'] = $this->h5pC->saveContent($content, $contentMainId);
       $this->contentId = $content['id'];
-
-      try {
-        // Save content folder contents
-        $this->h5pC->fs->saveContent($current_path, $content);
-      }
-      catch (Exception $e) {
-        $this->h5pF->setErrorMessage($e->getMessage(), 'save-content-failed');
-      }
-
-      // Remove temp content folder
-      H5PCore::deleteFileTree($basePath);
     }
   }
 
