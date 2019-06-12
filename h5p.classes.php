@@ -1556,11 +1556,9 @@ class H5PStorage {
    *  we're integrating with uses content id's and version id's
    * @param bool $skipContent
    * @param array $options
-   * @return bool TRUE if one or more libraries were updated
-   * TRUE if one or more libraries were updated
-   * FALSE otherwise
+   * @return array|null content if skipContent !== FALSE
    */
-  public function savePackage(&$content = NULL, $contentMainId = NULL, $skipContent = FALSE, $options = array()) {
+  public function savePackage($content = NULL, $contentMainId = NULL, $skipContent = FALSE, $options = array()) {
     if ($this->h5pC->mayUpdateLibraries()) {
       // Save the libraries we processed during validation
       $this->saveLibraries();
@@ -1591,6 +1589,8 @@ class H5PStorage {
       }
       $content['id'] = $this->h5pC->saveContent($content, $contentMainId);
       $this->contentId = $content['id'];
+
+      return $content;
     }
   }
 
