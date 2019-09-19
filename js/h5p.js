@@ -1260,9 +1260,31 @@ H5P.openReuseDialog = function ($element, contentData, library, instance, conten
       e.stopPropagation();
     }).appendTo($dialog.find('h2'));
     $dialog.find('.h5p-download-button').click(function () {
-      window.location.href = contentData.exportUrl;
-      instance.triggerXAPI('downloaded');
-      dialog.close();
+      // Disable the download button until the download starts
+      this.disabled = true;
+      this.querySelector('.h5p-button-title').innerHTML = 'Please wait...';
+      this.querySelector('.h5p-button-description').innerHTML = 'Your download will start in a few seconds.';
+
+      // Create a confirmation token that we will receive when this download has started
+      const token = new Date().getTime();
+
+      const waitForToken = function () {
+        const pieces = document.cookie.split('h5pdl' + token + '=');
+        if (pieces.length === 2) {
+          // Download has started, close dialog
+          instance.triggerXAPI('downloaded');
+          dialog.close();
+        }
+        else {
+          // Wait another second
+          setTimeout(waitForToken, 1000);
+        }
+      };
+      // Start waiting for download confirmation
+      setTimeout(waitForToken, 1000);
+
+      // Trigger download
+      window.location.href = contentData.exportUrl + '?dl=' + token;
     });
     $dialog.find('.h5p-copy-button').click(function () {
       const item = new H5P.ClipboardItem(library);

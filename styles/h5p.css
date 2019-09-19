@@ -498,6 +498,18 @@ div.h5p-fullscreen {
   border: 1px solid #dedede;
   background: #dfe4fe;
 }
+.h5p-big-button:disabled {
+  cursor: default;
+  border: 1px solid #fff;
+  background: #fff;
+}
+.h5p-big-button:disabled:before {
+  content: "\e90d";
+  font-size: 2em;
+  left: 0.4em;
+  top: 0.4em;
+  animation: h5pspin 0.25s linear infinite;
+}
 .h5p-button-title {
   color: #2747f7;
   font-size: 15px;
@@ -543,7 +555,11 @@ div.h5p-fullscreen {
   opacity: 0;
   visibility: hidden;
 }
-
+@keyframes h5pspin {
+  100% {
+    transform:rotate(360deg);
+  }
+}
 
 /* This is loaded as part of Core and not Editor since this needs to be outside the editor iframe */
 .h5peditor-semi-fullscreen {
