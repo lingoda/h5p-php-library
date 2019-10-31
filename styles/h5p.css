@@ -202,7 +202,7 @@ div.h5p-fullscreen {
   color: #999;
   text-decoration: none;
   outline: none;
-  line-height: 23px;
+  line-height: 22px;
 }
 .h5p-actions > .h5p-button:hover {
   color: #666;
@@ -223,8 +223,8 @@ div.h5p-fullscreen {
 .h5p-actions > .h5p-button:before {
   font-family: 'H5P';
   font-size: 20px;
-  line-height: 20px;
-  vertical-align: top;
+  line-height: 23px;
+  vertical-align: bottom;
   padding-right: 0;
 }
 .h5p-actions > .h5p-button.h5p-export:before {
@@ -554,6 +554,26 @@ div.h5p-fullscreen {
   opacity: 0;
   visibility: hidden;
 }
+.h5p-content code,
+.h5peditor code {
+  color: #3d3d3d;
+  background: #e0e0e0;
+  border-radius: 2px;
+  padding: 0 5px;
+}
+.h5p-content pre > code,
+.h5peditor pre > code {
+  background-color: #fafafa;
+  padding: 5px;
+  display: block;
+  line-height: normal;
+  border: 1px solid #c7c7c7;
+  border-left-width: 4px;
+  max-width: 100%;
+  white-space: pre;
+  overflow: auto;
+}
+
 @keyframes h5pspin {
   100% {
     transform:rotate(360deg);
