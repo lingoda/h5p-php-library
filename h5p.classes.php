@@ -2231,7 +2231,13 @@ class H5PCore {
       }
     }
 
+    $library = $params->library;
     $params = json_encode($params->params);
+    $stripped = $this->h5pF->stripAnswers((object) array(
+      'library' => $library,
+      'params' => json_decode($params) // Using json_decode to create deep copy
+    ));
+    $content['stripped'] = (empty($stripped) ? '' : json_encode($stripped->params));
 
     // Update content dependencies.
     $content['dependencies'] = $validator->getDependencies();
@@ -2251,6 +2257,7 @@ class H5PCore {
       // Cache.
       $this->h5pF->updateContentFields($content['id'], array(
         'filtered' => $params,
+        'stripped' => $content['stripped'],
         'slug' => $content['slug']
       ));
     }
