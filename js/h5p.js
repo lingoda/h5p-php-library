@@ -411,9 +411,9 @@ H5P.getHeadTags = function (contentId) {
   return '<base target="_parent">' +
          createStyleTags(H5PIntegration.core.styles) +
          createStyleTags(H5PIntegration.contents['cid-' + contentId].styles) +
+         '<script>H5PIntegration = window.parent.H5PIntegration; var H5P = H5P || {}; H5P.externalEmbed = false;</script>' +
          createScriptTags(H5PIntegration.core.scripts) +
-         createScriptTags(H5PIntegration.contents['cid-' + contentId].scripts) +
-         '<script>H5PIntegration = window.parent.H5PIntegration; var H5P = H5P || {}; H5P.externalEmbed = false;</script>';
+         createScriptTags(H5PIntegration.contents['cid-' + contentId].scripts);
 };
 
 /**
